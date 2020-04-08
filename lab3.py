@@ -17,7 +17,16 @@ class State:
 		if self is None or another is None: 
 			return another is None and self is None
 		else:
-			return self.leftbank == another.leftbank and self.boat['passengers'] == another.boat['passengers']
+			for passenger in self.leftbank:
+				if not (passenger in another.leftbank):
+					return False
+			for passenger in self.boat['passengers']:
+				if not (passenger in another.boat['passengers']):
+					return False
+			for passenger in self.rightbank:
+				if not (passenger in another.rightbank):
+					return False
+			return True
 
 	def __lt__(self, another):
 		return self.value < another.value
@@ -141,7 +150,7 @@ class BeamAlgoBuilder:
 	#Value of k is set as 3 by default, but can be changed by the user
 	def BEAM(self):            
 		states = [self.task.begin_state]
-		while not self.contains_final_state(states):
+		while not self.contains_final_state(states) and len(states)!=0:
 			new_states = list()
 			for state in states:
 				new_states += self.find_next_states(state)
@@ -157,13 +166,9 @@ class BeamAlgoBuilder:
 		return False    
 
 
-def print_states(states):
-	for state in states:
-		print ('|' + str(state.leftbank) + '|' + str(state.boat) + '|' + str(state.rightbank) +'|' + str(state.value))
-
-
-
-builder = BeamAlgoBuilder(k=2)
+#task = Task(begin_state = State(rightbank = ['lion', 'fox', 'goose', 'corn'], boat = {'position': 'left', 'passengers': []}),\
+					#final_state = State(leftbank = ['lion', 'fox', 'goose', 'corn']))
+builder = BeamAlgoBuilder()#task=task, k=2)
 builder.BEAM()
 state = builder.task.final_state
 state_str = ''
